@@ -23,18 +23,18 @@ The script offers an interactive menu with several sections, including pod manag
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/lm2git/kubernetes-helper.git
-    cd kubernetes-helper
+    git clone https://github.com/lm2git/kubectl-helper.git
+    cd kubectl-helper
     ```
 
 2. Make the script executable:
     ```bash
-    chmod +x kubernetes-helper.sh
+    chmod +x helper.sh
     ```
 
 3. Run the script:
     ```bash
-    ./kubernetes-helper.sh
+    ./helper.sh
     ```
 
 4. Use the interactive menu to choose the section you want to explore. The script will display a set of commands and examples for that section.
