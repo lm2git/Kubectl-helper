@@ -225,4 +225,144 @@ advanced_usage() {
     kubectl get pods --no-headers | grep <pattern>
     echo "\n# Estrarre nomi di tutti i nodi"
     kubectl get nodes -o jsonpath='{.items[*].metadata.name}'
-    echo "\n# Estrai indirizzi
+    echo "\n# Estrai indirizzi IP dei nodi"
+    kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}'
+}
+
+security_and_access_management() {
+    echo "# Security and Access Management"
+    echo "# List all roles in the cluster"
+    kubectl get roles --all-namespaces
+    echo "\n# List all role bindings"
+    kubectl get rolebindings --all-namespaces
+    echo "\n# Create a role binding"
+    kubectl create rolebinding <rolebinding-name> --role=<role-name> --user=<user-name> --namespace=<namespace-name>
+    echo "\n# Create a service account"
+    kubectl create serviceaccount <service-account-name> --namespace=<namespace-name>
+    echo "\n# List all service accounts"
+    kubectl get serviceaccounts --namespace=<namespace-name>
+    echo "\n# Describe a service account"
+    kubectl describe serviceaccount <service-account-name> --namespace=<namespace-name>
+    echo "\n# View RBAC policies"
+    kubectl get clusterrolebinding
+}
+
+miscellaneous_commands() {
+    echo "# Miscellaneous Commands"
+    echo "# Get cluster information"
+    kubectl cluster-info
+    echo "\n# Get the version of kubectl and the cluster"
+    kubectl version
+    echo "\n# Show the current context"
+    kubectl config current-context
+    echo "\n# List all contexts"
+    kubectl config get-contexts
+    echo "\n# Switch to a different context"
+    kubectl config use-context <context-name>
+}
+
+cluster_status_and_info() {
+    echo "# Cluster Status and General Information"
+    echo "# Get general information about the cluster"
+    kubectl cluster-info
+    echo "\n# Get nodes status"
+    kubectl get nodes
+    echo "\n# Get node resources"
+    kubectl describe node <node-name>
+    echo "\n# Get the status of all pods in the cluster"
+    kubectl get pods --all-namespaces
+}
+
+resource_problem_identification() {
+    echo "# Resource Problem Identification"
+    echo "# Check pod status for issues"
+    kubectl get pods --field-selector=status.phase!=Running
+    echo "\n# Identify unhealthy deployments"
+    kubectl get deployments --field-selector=status.replicas!=status.availableReplicas
+    echo "\n# Get events related to a specific pod"
+    kubectl describe pod <pod-name>
+}
+
+node_analysis_troubleshooting() {
+    echo "# Node Analysis and Troubleshooting"
+    echo "# View node status"
+    kubectl describe node <node-name>
+    echo "\n# Get pod logs for a node"
+    kubectl logs <pod-name> --node=<node-name>
+    echo "\n# Describe node's system status"
+    kubectl describe node <node-name> --show-events
+}
+
+network_troubleshooting() {
+    echo "# Network Troubleshooting"
+    echo "# Check services and their endpoints"
+    kubectl get endpoints
+    echo "\n# Troubleshoot DNS issues"
+    kubectl exec -it <pod-name> -- nslookup <service-name>
+    echo "\n# Get pod network policies"
+    kubectl get networkpolicies --all-namespaces
+}
+
+resource_utilization_verification() {
+    echo "# Resource Utilization Verification"
+    echo "# Check resource usage of pods"
+    kubectl top pods
+    echo "\n# Check resource usage of nodes"
+    kubectl top nodes
+    echo "\n# Get CPU and memory usage for a pod"
+    kubectl top pod <pod-name>
+}
+
+rollout_and_update_troubleshooting() {
+    echo "# Rollout and Update Troubleshooting"
+    echo "# Check rollout status"
+    kubectl rollout status deployment/<deployment-name>
+    echo "\n# Rollback a deployment"
+    kubectl rollout undo deployment/<deployment-name>
+    echo "\n# Pause a rollout"
+    kubectl rollout pause deployment/<deployment-name>
+    echo "\n# Resume a rollout"
+    kubectl rollout resume deployment/<deployment-name>
+}
+
+events_and_diagnostics() {
+    echo "# Events and Diagnostics"
+    echo "# Get all events in the cluster"
+    kubectl get events --sort-by='.lastTimestamp'
+    echo "\n# Describe a pod's events"
+    kubectl describe pod <pod-name>
+    echo "\n# Tail events from a specific namespace"
+    kubectl get events -n <namespace-name> --watch
+}
+
+# Main interactive menu logic
+while true; do
+    show_menu
+    read -r option
+    case $option in
+        1) api_versions ;;
+        2) crd_operations ;;
+        3) pod_operations ;;
+        4) deployment_operations ;;
+        5) service_operations ;;
+        6) namespace_operations ;;
+        7) configmaps_and_secrets ;;
+        8) pv_and_pvc_operations ;;
+        9) replicasets_and_daemonsets ;;
+        10) jobs_and_cronjobs ;;
+        11) advanced_debugging ;;
+        12) yaml_generation ;;
+        13) advanced_usage ;;
+        14) security_and_access_management ;;
+        15) miscellaneous_commands ;;
+        16) cluster_status_and_info ;;
+        17) resource_problem_identification ;;
+        18) node_analysis_troubleshooting ;;
+        19) network_troubleshooting ;;
+        20) resource_utilization_verification ;;
+        21) rollout_and_update_troubleshooting ;;
+        22) events_and_diagnostics ;;
+        0) exit 0 ;;
+        *) echo "Invalid option, please try again." ;;
+    esac
+done
