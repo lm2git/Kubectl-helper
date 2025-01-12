@@ -322,6 +322,7 @@ ask_return_to_menu() {
     echo -n "Return to the main menu? (y/n): "
     read answer
     if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+        clear
         main_menu
     else
         exit 0
@@ -330,6 +331,7 @@ ask_return_to_menu() {
 
 # Main menu function
 main_menu() {
+    clear
     show_menu
     read option
     case $option in
