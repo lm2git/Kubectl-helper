@@ -61,6 +61,7 @@ api_versions() {
     color_echo "${YELLOW}" "kubectl explain pod --api-version=<api-version>"
     color_echo "${GREEN}" "# Explore specific resources in an API version"
     color_echo "${YELLOW}" "kubectl explain deployment.v1.apps"
+    ask_return_to_menu
 }
 
 crd_operations() {
@@ -73,6 +74,7 @@ crd_operations() {
     color_echo "${YELLOW}" "kubectl apply -f <crd-definition-file>.yaml"
     color_echo "${GREEN}" "# Delete a specific CRD"
     color_echo "${YELLOW}" "kubectl delete crd <crd-name>"
+    ask_return_to_menu
 }
 
 pod_operations() {
@@ -97,6 +99,7 @@ pod_operations() {
     color_echo "${YELLOW}" "kubectl get pods -l app=<label-value>"
     color_echo "${GREEN}" "# Mostra solo i nomi delle risorse"
     color_echo "${YELLOW}" "kubectl get pods --no-headers -o custom-columns=':metadata.name'"
+    ask_return_to_menu
 }
 
 deployment_operations() {
@@ -113,12 +116,13 @@ deployment_operations() {
     color_echo "${YELLOW}" "kubectl rollout undo deployment/<deployment-name>"
     color_echo "${GREEN}" "# Check rollout status of a deployment"
     color_echo "${YELLOW}" "kubectl rollout status deployment/<deployment-name>"
-    color_echo "${GREEN}" "# Pausa il rollout di un deployment"
+    color_echo "${GREEN}" "# Pause a deployment rollout"
     color_echo "${YELLOW}" "kubectl rollout pause deployment/<deployment-name>"
-    color_echo "${GREEN}" "# Riprendi il rollout di un deployment"
+    color_echo "${GREEN}" "# Resume a deployment rollout"
     color_echo "${YELLOW}" "kubectl rollout resume deployment/<deployment-name>"
-    color_echo "${GREEN}" "# Mostra la cronologia del rollout di un deployment"
+    color_echo "${GREEN}" "# Show deployment rollout history"
     color_echo "${YELLOW}" "kubectl rollout history deployment/<deployment-name>"
+    ask_return_to_menu
 }
 
 service_operations() {
@@ -131,6 +135,7 @@ service_operations() {
     color_echo "${YELLOW}" "kubectl expose deployment <deployment-name> --type=ClusterIP --port=80 --target-port=8080"
     color_echo "${GREEN}" "# Describe a specific service"
     color_echo "${YELLOW}" "kubectl describe service <service-name>"
+    ask_return_to_menu
 }
 
 namespace_operations() {
@@ -141,12 +146,13 @@ namespace_operations() {
     color_echo "${YELLOW}" "kubectl config set-context --current --namespace=<namespace-name>"
     color_echo "${GREEN}" "# Create a new namespace"
     color_echo "${YELLOW}" "kubectl create namespace <namespace-name>"
-    color_echo "${GREEN}" "# Visualizza risorse in tutti i namespace"
+    color_echo "${GREEN}" "# View resources across all namespaces"
     color_echo "${YELLOW}" "kubectl get pods --all-namespaces"
-    color_echo "${GREEN}" "# Visualizza risorse in un namespace specifico"
+    color_echo "${GREEN}" "# View resources in a specific namespace"
     color_echo "${YELLOW}" "kubectl get pods -n <namespace-name>"
-    color_echo "${GREEN}" "# Elimina un namespace"
+    color_echo "${GREEN}" "# Delete a namespace"
     color_echo "${YELLOW}" "kubectl delete namespace <namespace-name>"
+    ask_return_to_menu
 }
 
 configmaps_and_secrets() {
@@ -157,7 +163,7 @@ configmaps_and_secrets() {
     color_echo "${YELLOW}" "kubectl create configmap <configmap-name> --from-file=<file-path>"
     color_echo "${GREEN}" "# Describe a ConfigMap"
     color_echo "${YELLOW}" "kubectl describe configmap <configmap-name>"
-    color_echo "${GREEN}" "# Estrai dati da un ConfigMap"
+    color_echo "${GREEN}" "# Extract data from a ConfigMap"
     color_echo "${YELLOW}" "kubectl get configmap <configmap-name> -o jsonpath='{.data.<key>}'"
     color_echo "${GREEN}" "# List all Secrets"
     color_echo "${YELLOW}" "kubectl get secrets"
@@ -165,8 +171,9 @@ configmaps_and_secrets() {
     color_echo "${YELLOW}" "kubectl create secret generic <secret-name> --from-file=<file-path>"
     color_echo "${GREEN}" "# Describe a Secret"
     color_echo "${YELLOW}" "kubectl describe secret <secret-name>"
-    color_echo "${GREEN}" "# Estrai dati da un Secret"
+    color_echo "${GREEN}" "# Extract data from a Secret"
     color_echo "${YELLOW}" "kubectl get secret <secret-name> -o jsonpath='{.data.<key>}' | base64 --decode"
+    ask_return_to_menu
 }
 
 pv_and_pvc_operations() {
@@ -175,33 +182,43 @@ pv_and_pvc_operations() {
     color_echo "${YELLOW}" "kubectl get pv"
     color_echo "${GREEN}" "# List all Persistent Volume Claims"
     color_echo "${YELLOW}" "kubectl get pvc"
+    color_echo "${GREEN}" "# Describe a Persistent Volume"
+    color_echo "${YELLOW}" "kubectl describe pv <pv-name>"
     color_echo "${GREEN}" "# Describe a Persistent Volume Claim"
     color_echo "${YELLOW}" "kubectl describe pvc <pvc-name>"
+    color_echo "${GREEN}" "# Create a Persistent Volume"
+    color_echo "${YELLOW}" "kubectl apply -f <pv-definition-file>.yaml"
+    color_echo "${GREEN}" "# Create a Persistent Volume Claim"
+    color_echo "${YELLOW}" "kubectl apply -f <pvc-definition-file>.yaml"
+    ask_return_to_menu
 }
 
-replicasets_and_daemonsets() {
-    color_echo "${PURPLE}" "# ReplicaSets and DaemonSets"
-    color_echo "${GREEN}" "# List all ReplicaSets"
-    color_echo "${YELLOW}" "kubectl get replicasets"
-    color_echo "${GREEN}" "# Describe a specific ReplicaSet"
-    color_echo "${YELLOW}" "kubectl describe replicaset <replicaset-name>"
-    color_echo "${GREEN}" "# List all DaemonSets"
-    color_echo "${YELLOW}" "kubectl get daemonsets"
+# Ask if the user wants to return to the main menu
+ask_return_to_menu() {
+    color_echo "${BLUE}" "Do you want to return to the main menu? (y/n)"
+    read return_choice
+    if [[ "$return_choice" == "y" || "$return_choice" == "Y" ]]; then
+        clear
+        show_menu
+        read choice
+        case $choice in
+            1) api_versions ;;
+            2) crd_operations ;;
+            3) pod_operations ;;
+            4) deployment_operations ;;
+            5) service_operations ;;
+            6) namespace_operations ;;
+            7) configmaps_and_secrets ;;
+            8) pv_and_pvc_operations ;;
+            *) echo "Invalid choice" ;;
+        esac
+    else
+        color_echo "${RED}" "Exiting..."
+        exit 0
+    fi
 }
 
-jobs_and_cronjobs() {
-    color_echo "${PURPLE}" "# Jobs and CronJobs"
-    color_echo "${GREEN}" "# List all Jobs"
-    color_echo "${YELLOW}" "kubectl get jobs"
-    color_echo "${GREEN}" "# List all CronJobs"
-    color_echo "${YELLOW}" "kubectl get cronjobs"
-    color_echo "${GREEN}" "# Create a CronJob"
-    color_echo "${YELLOW}" "kubectl create cronjob <cronjob-name> --image=<image-name> --schedule='<cron-schedule>'"
-}
-
-# Add more functions for other menu items similarly...
-
-# Example of how to call the menu and choose an option
+# Main program loop
 show_menu
 read choice
 case $choice in
@@ -213,7 +230,5 @@ case $choice in
     6) namespace_operations ;;
     7) configmaps_and_secrets ;;
     8) pv_and_pvc_operations ;;
-    9) replicasets_and_daemonsets ;;
-    10) jobs_and_cronjobs ;;
     *) echo "Invalid choice" ;;
 esac
