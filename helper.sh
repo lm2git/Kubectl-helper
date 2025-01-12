@@ -89,16 +89,6 @@ pod_operations() {
     color_echo "${YELLOW}" "kubectl logs -f <pod-name>"
     color_echo "${GREEN}" "# Execute a command inside a pod"
     color_echo "${YELLOW}" "kubectl exec -it <pod-name> -- <command>"
-    color_echo "${GREEN}" "# Visualizza risorse in formato wide"
-    color_echo "${YELLOW}" "kubectl get pods -o wide"
-    color_echo "${GREEN}" "# Visualizza risorse in formato JSON"
-    color_echo "${YELLOW}" "kubectl get pods -o json"
-    color_echo "${GREEN}" "# Visualizza risorse in formato YAML"
-    color_echo "${YELLOW}" "kubectl get pods -o yaml"
-    color_echo "${GREEN}" "# Filtra le risorse con una specifica etichetta"
-    color_echo "${YELLOW}" "kubectl get pods -l app=<label-value>"
-    color_echo "${GREEN}" "# Mostra solo i nomi delle risorse"
-    color_echo "${YELLOW}" "kubectl get pods --no-headers -o custom-columns=':metadata.name'"
     ask_return_to_menu
 }
 
@@ -116,12 +106,6 @@ deployment_operations() {
     color_echo "${YELLOW}" "kubectl rollout undo deployment/<deployment-name>"
     color_echo "${GREEN}" "# Check rollout status of a deployment"
     color_echo "${YELLOW}" "kubectl rollout status deployment/<deployment-name>"
-    color_echo "${GREEN}" "# Pause a deployment rollout"
-    color_echo "${YELLOW}" "kubectl rollout pause deployment/<deployment-name>"
-    color_echo "${GREEN}" "# Resume a deployment rollout"
-    color_echo "${YELLOW}" "kubectl rollout resume deployment/<deployment-name>"
-    color_echo "${GREEN}" "# Show deployment rollout history"
-    color_echo "${YELLOW}" "kubectl rollout history deployment/<deployment-name>"
     ask_return_to_menu
 }
 
@@ -193,42 +177,188 @@ pv_and_pvc_operations() {
     ask_return_to_menu
 }
 
-# Ask if the user wants to return to the main menu
+replicasets_and_daemonsets() {
+    color_echo "${PURPLE}" "# ReplicaSets and DaemonSets"
+    color_echo "${GREEN}" "# List all ReplicaSets"
+    color_echo "${YELLOW}" "kubectl get replicasets"
+    color_echo "${GREEN}" "# List all DaemonSets"
+    color_echo "${YELLOW}" "kubectl get daemonsets"
+    color_echo "${GREEN}" "# Describe a ReplicaSet"
+    color_echo "${YELLOW}" "kubectl describe replicaset <replicaset-name>"
+    color_echo "${GREEN}" "# Describe a DaemonSet"
+    color_echo "${YELLOW}" "kubectl describe daemonset <daemonset-name>"
+    ask_return_to_menu
+}
+
+jobs_and_cronjobs() {
+    color_echo "${PURPLE}" "# Jobs and CronJobs"
+    color_echo "${GREEN}" "# List all Jobs"
+    color_echo "${YELLOW}" "kubectl get jobs"
+    color_echo "${GREEN}" "# List all CronJobs"
+    color_echo "${YELLOW}" "kubectl get cronjobs"
+    color_echo "${GREEN}" "# Create a Job"
+    color_echo "${YELLOW}" "kubectl create job <job-name> --from=cronjob/<cronjob-name>"
+    color_echo "${GREEN}" "# Create a CronJob"
+    color_echo "${YELLOW}" "kubectl create cronjob <cronjob-name> --schedule=<cron-schedule> --image=<image-name>"
+    ask_return_to_menu
+}
+
+advanced_debugging() {
+    color_echo "${PURPLE}" "# Advanced Debugging"
+    color_echo "${GREEN}" "# View resource events"
+    color_echo "${YELLOW}" "kubectl get events"
+    color_echo "${GREEN}" "# View logs of a specific pod"
+    color_echo "${YELLOW}" "kubectl logs <pod-name>"
+    color_echo "${GREEN}" "# Describe a resource"
+    color_echo "${YELLOW}" "kubectl describe <resource-type> <resource-name>"
+    ask_return_to_menu
+}
+
+yaml_generation() {
+    color_echo "${PURPLE}" "# YAML Generation and Editing"
+    color_echo "${GREEN}" "# Generate YAML for a resource"
+    color_echo "${YELLOW}" "kubectl get <resource-type> <resource-name> -o yaml"
+    color_echo "${GREEN}" "# Edit a resource YAML"
+    color_echo "${YELLOW}" "kubectl edit <resource-type> <resource-name>"
+    ask_return_to_menu
+}
+
+advanced_usage() {
+    color_echo "${PURPLE}" "# Advanced Usage"
+    color_echo "${GREEN}" "# Set resource limits"
+    color_echo "${YELLOW}" "kubectl set resources deployment/<deployment-name> --limits=cpu=1,mem=1Gi"
+    color_echo "${GREEN}" "# Run a pod with specific resource requests"
+    color_echo "${YELLOW}" "kubectl run <pod-name> --requests=cpu=100m,memory=200Mi"
+    ask_return_to_menu
+}
+
+security_management() {
+    color_echo "${PURPLE}" "# Security and Access Management"
+    color_echo "${GREEN}" "# Manage RBAC roles"
+    color_echo "${YELLOW}" "kubectl create role <role-name> --verb=<verbs> --resource=<resources>"
+    color_echo "${GREEN}" "# Manage Service Accounts"
+    color_echo "${YELLOW}" "kubectl create serviceaccount <serviceaccount-name>"
+    color_echo "${GREEN}" "# Bind RBAC roles to users"
+    color_echo "${YELLOW}" "kubectl create rolebinding <rolebinding-name> --role=<role-name> --user=<user-name>"
+    ask_return_to_menu
+}
+
+miscellaneous_commands() {
+    color_echo "${PURPLE}" "# Miscellaneous Commands"
+    color_echo "${GREEN}" "# Get Kubernetes version"
+    color_echo "${YELLOW}" "kubectl version"
+    color_echo "${GREEN}" "# View Kubernetes configuration"
+    color_echo "${YELLOW}" "kubectl config view"
+    ask_return_to_menu
+}
+
+cluster_status() {
+    color_echo "${PURPLE}" "# Cluster Status and General Information"
+    color_echo "${GREEN}" "# Get cluster info"
+    color_echo "${YELLOW}" "kubectl cluster-info"
+    color_echo "${GREEN}" "# Get node status"
+    color_echo "${YELLOW}" "kubectl get nodes"
+    color_echo "${GREEN}" "# Describe nodes"
+    color_echo "${YELLOW}" "kubectl describe node <node-name>"
+    ask_return_to_menu
+}
+
+resource_problem_identification() {
+    color_echo "${PURPLE}" "# Resource Problem Identification"
+    color_echo "${GREEN}" "# Identify failing pods"
+    color_echo "${YELLOW}" "kubectl get pods --field-selector=status.phase!=Running"
+    color_echo "${GREEN}" "# Identify resource utilization issues"
+    color_echo "${YELLOW}" "kubectl top pods"
+    ask_return_to_menu
+}
+
+node_troubleshooting() {
+    color_echo "${PURPLE}" "# Node Analysis and Troubleshooting"
+    color_echo "${GREEN}" "# Describe a specific node"
+    color_echo "${YELLOW}" "kubectl describe node <node-name>"
+    color_echo "${GREEN}" "# View pod distribution across nodes"
+    color_echo "${YELLOW}" "kubectl get pods --field-selector spec.nodeName=<node-name>"
+    ask_return_to_menu
+}
+
+network_troubleshooting() {
+    color_echo "${PURPLE}" "# Network Troubleshooting"
+    color_echo "${GREEN}" "# Test pod connectivity"
+    color_echo "${YELLOW}" "kubectl run -i --tty --rm test-pod --image=busybox --restart=Never -- /bin/sh"
+    color_echo "${GREEN}" "# Describe network policies"
+    color_echo "${YELLOW}" "kubectl describe networkpolicy <policy-name>"
+    ask_return_to_menu
+}
+
+resource_utilization() {
+    color_echo "${PURPLE}" "# Resource Utilization Verification"
+    color_echo "${GREEN}" "# View CPU and Memory utilization"
+    color_echo "${YELLOW}" "kubectl top pods"
+    color_echo "${GREEN}" "# Get resource usage by namespace"
+    color_echo "${YELLOW}" "kubectl top pods --namespace=<namespace>"
+    ask_return_to_menu
+}
+
+rollout_troubleshooting() {
+    color_echo "${PURPLE}" "# Rollout and Update Troubleshooting"
+    color_echo "${GREEN}" "# View rollout status"
+    color_echo "${YELLOW}" "kubectl rollout status deployment/<deployment-name>"
+    color_echo "${GREEN}" "# Rollback to previous version"
+    color_echo "${YELLOW}" "kubectl rollout undo deployment/<deployment-name>"
+    ask_return_to_menu
+}
+
+events_and_diagnostics() {
+    color_echo "${PURPLE}" "# Events and Diagnostics"
+    color_echo "${GREEN}" "# View events for the cluster"
+    color_echo "${YELLOW}" "kubectl get events"
+    color_echo "${GREEN}" "# Get detailed diagnostics"
+    color_echo "${YELLOW}" "kubectl describe <resource-type> <resource-name>"
+    ask_return_to_menu
+}
+
+# Function to ask if the user wants to return to the main menu
 ask_return_to_menu() {
-    color_echo "${BLUE}" "Do you want to return to the main menu? (y/n)"
-    read return_choice
-    if [[ "$return_choice" == "y" || "$return_choice" == "Y" ]]; then
-        clear
-        show_menu
-        read choice
-        case $choice in
-            1) api_versions ;;
-            2) crd_operations ;;
-            3) pod_operations ;;
-            4) deployment_operations ;;
-            5) service_operations ;;
-            6) namespace_operations ;;
-            7) configmaps_and_secrets ;;
-            8) pv_and_pvc_operations ;;
-            *) echo "Invalid choice" ;;
-        esac
+    echo -n "Return to the main menu? (y/n): "
+    read answer
+    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+        main_menu
     else
-        color_echo "${RED}" "Exiting..."
         exit 0
     fi
 }
 
-# Main program loop
-show_menu
-read choice
-case $choice in
-    1) api_versions ;;
-    2) crd_operations ;;
-    3) pod_operations ;;
-    4) deployment_operations ;;
-    5) service_operations ;;
-    6) namespace_operations ;;
-    7) configmaps_and_secrets ;;
-    8) pv_and_pvc_operations ;;
-    *) echo "Invalid choice" ;;
-esac
+# Main menu function
+main_menu() {
+    show_menu
+    read option
+    case $option in
+        1) api_versions ;;
+        2) crd_operations ;;
+        3) pod_operations ;;
+        4) deployment_operations ;;
+        5) service_operations ;;
+        6) namespace_operations ;;
+        7) configmaps_and_secrets ;;
+        8) pv_and_pvc_operations ;;
+        9) replicasets_and_daemonsets ;;
+        10) jobs_and_cronjobs ;;
+        11) advanced_debugging ;;
+        12) yaml_generation ;;
+        13) advanced_usage ;;
+        14) security_management ;;
+        15) miscellaneous_commands ;;
+        16) cluster_status ;;
+        17) resource_problem_identification ;;
+        18) node_troubleshooting ;;
+        19) network_troubleshooting ;;
+        20) resource_utilization ;;
+        21) rollout_troubleshooting ;;
+        22) events_and_diagnostics ;;
+        0) exit 0 ;;
+        *) echo -e "${RED}Invalid option! Please try again.${RESET}"; main_menu ;;
+    esac
+}
+
+# Start the script by calling the main menu
+main_menu
