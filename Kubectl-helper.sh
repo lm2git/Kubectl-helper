@@ -1,265 +1,228 @@
 #!/bin/bash
 
-# =============================================
-# Kubernetes Troubleshooting Script
-# =============================================
+# -----------------------------------------------------------------------------
+# Kubernetes Helper Script with Interactive Menu
+# Includes commands for CKAD, CKA, and CKS exam preparation
+# -----------------------------------------------------------------------------
 
-# Funzione di help
-function show_help() {
-  echo "Usage: ./k8s_troubleshooting.sh [section]"
-  echo ""
-  echo "Sections:"
-  echo "  pods            - Debug and troubleshoot pod-related issues"
-  echo "  nodes           - Debug node-related issues"
-  echo "  network         - Network troubleshooting"
-  echo "  volumes         - Storage (PV, PVC) troubleshooting"
-  echo "  jobs            - Debug jobs and cronjobs"
-  echo "  ingress         - Debug ingress and service connectivity"
-  echo "  security        - Security-related checks (CKS focus)"
-  echo "  advanced        - Advanced tips and tools"
-  echo "  yaml            - YAML formatting and validation tips"
-  echo ""
-  echo "Examples:"
-  echo "  ./k8s_troubleshooting.sh pods"
-  echo "  ./k8s_troubleshooting.sh advanced"
+# Utility function to display menus
+show_menu() {
+    echo "Kubernetes Command Helper - Main Menu"
+    echo "-------------------------------------"
+    echo "1. Work with API Versions"
+    echo "2. Manage Custom Resource Definitions (CRDs)"
+    echo "3. Handle Pods"
+    echo "4. Manage Deployments"
+    echo "5. Work with Services"
+    echo "6. Namespace Operations"
+    echo "7. ConfigMaps and Secrets"
+    echo "8. Persistent Volumes and Claims"
+    echo "9. ReplicaSets and DaemonSets"
+    echo "10. Jobs and CronJobs"
+    echo "11. Advanced Debugging"
+    echo "12. YAML Generation and Editing"
+    echo "13. Advanced Usage"
+    echo "14. Security and Access Management"
+    echo "15. Miscellaneous Commands"
+    echo "16. Cluster Status and General Information"
+    echo "17. Resource Problem Identification"
+    echo "18. Node Analysis and Troubleshooting"
+    echo "19. Network Troubleshooting"
+    echo "20. Resource Utilization Verification"
+    echo "21. Rollout and Update Troubleshooting"
+    echo "22. Events and Diagnostics"
+    echo "0. Exit"
+    echo "-------------------------------------"
+    echo -n "Select an option: "
 }
 
-# =============================================
-# Pods Troubleshooting
-# =============================================
-function pods_troubleshooting() {
-  echo "=== Debugging Pods ==="
-  
-  # Comandi per troubleshooting dei pod
-  echo "1. List pods with status and node:"
-  kubectl get pods -o wide
-
-  echo "2. Describe a problematic pod:"
-  echo "kubectl describe pod <pod-name>"
-
-  echo "3. Debug CrashLoopBackOff pods:"
-  kubectl get pods | grep CrashLoopBackOff
-
-  echo "4. Restart a crashing pod:"
-  echo "kubectl delete pod <pod-name>"
-
-  echo "5. Check logs for a specific pod:"
-  echo "kubectl logs <pod-name>"
-
-  echo "6. Execute a shell in a running pod:"
-  echo "kubectl exec -it <pod-name> -- /bin/bash"
-
-  # Comandi aggiuntivi per troubleshooting avanzato dei pod
-  echo "7. List pod events:"
-  kubectl get events --field-selector involvedObject.kind=Pod
-  
-  echo "8. Get logs from previous pod container:"
-  kubectl logs <pod-name> --previous
-
-  echo "9. Get logs from specific container inside pod:"
-  kubectl logs <pod-name> -c <container-name>
+# Function for each menu item
+api_versions() {
+    echo "# Work with API Versions"
+    echo "# Display all available API versions in the cluster"
+    kubectl api-versions
+    echo "\n# Explain a specific resource (e.g., pod) in a particular API version"
+    kubectl explain pod --api-version=<api-version>
+    echo "\n# Explore specific resources in an API version"
+    kubectl explain deployment.v1.apps
 }
 
-# =============================================
-# Nodes Troubleshooting
-# =============================================
-function nodes_troubleshooting() {
-  echo "=== Debugging Nodes ==="
-  
-  # Comandi per troubleshooting dei nodi
-  echo "1. List all nodes with statuses:"
-  kubectl get nodes -o wide
-
-  echo "2. Describe a specific node:"
-  echo "kubectl describe node <node-name>"
-
-  echo "3. Check for NotReady nodes:"
-  kubectl get nodes | grep NotReady
-
-  echo "4. Debug resources on a node:"
-  kubectl top node <node-name>
-
-  # Aggiungi controllo della situazione dei nodi
-  echo "5. Check for node taints:"
-  kubectl describe node <node-name> | grep Taints
+crd_operations() {
+    echo "# Manage Custom Resource Definitions (CRDs)"
+    echo "# List all CRDs in the cluster"
+    kubectl get crds
+    echo "\n# Describe a specific CRD"
+    kubectl describe crd <crd-name>
+    echo "\n# Create a CRD from a YAML file"
+    kubectl apply -f <crd-definition-file>.yaml
+    echo "\n# Delete a specific CRD"
+    kubectl delete crd <crd-name>
 }
 
-# =============================================
-# Network Troubleshooting
-# =============================================
-function network_troubleshooting() {
-  echo "=== Debugging Network Issues ==="
-
-  # Comandi per troubleshooting di rete
-  echo "1. Test DNS resolution from a pod:"
-  echo "kubectl run test-dns --rm -it --image=busybox -- nslookup <service-name>"
-
-  echo "2. Test connectivity between pods:"
-  echo "kubectl exec -it <pod-name> -- ping <target-pod-ip>"
-
-  echo "3. Test service availability:"
-  echo "kubectl exec -it <pod-name> -- curl http://<service-name>:<port>"
-
-  # Aggiungi ulteriore debug di rete
-  echo "4. Debug service DNS resolution:"
-  echo "kubectl exec -it <pod-name> -- nslookup <service-name>"
-
-  echo "5. Check if a service is exposing the correct ports:"
-  kubectl describe svc <service-name>
+pod_operations() {
+    echo "# Handle Pods"
+    echo "# List all pods in the cluster"
+    kubectl get pods
+    echo "\n# Describe a specific pod"
+    kubectl describe pod <pod-name>
+    echo "\n# Get logs from a pod"
+    kubectl logs <pod-name>
+    echo "\n# Follow logs of a pod in real-time"
+    kubectl logs -f <pod-name>
+    echo "\n# Execute a command inside a pod"
+    kubectl exec -it <pod-name> -- <command>
+    echo "\n# Visualizza risorse in formato wide"
+    kubectl get pods -o wide
+    echo "\n# Visualizza risorse in formato JSON"
+    kubectl get pods -o json
+    echo "\n# Visualizza risorse in formato YAML"
+    kubectl get pods -o yaml
+    echo "\n# Filtra le risorse con una specifica etichetta"
+    kubectl get pods -l app=<label-value>
+    echo "\n# Mostra solo i nomi delle risorse"
+    kubectl get pods --no-headers -o custom-columns=":metadata.name"
 }
 
-# =============================================
-# Storage Troubleshooting
-# =============================================
-function storage_troubleshooting() {
-  echo "=== Debugging Storage Issues ==="
-  
-  # Comandi per troubleshooting dello storage
-  echo "1. List PVCs and their statuses:"
-  kubectl get pvc --all-namespaces
-
-  echo "2. Describe a specific PVC:"
-  echo "kubectl describe pvc <pvc-name>"
-
-  echo "3. List PVs and their statuses:"
-  kubectl get pv
-
-  # Aggiungi troubleshooting su storage avanzato
-  echo "4. Check for failed PVCs:"
-  kubectl get pvc | grep Failed
-  
-  echo "5. Check persistent volume access modes:"
-  kubectl describe pv <pv-name> | grep 'Access Modes'
+deployment_operations() {
+    echo "# Manage Deployments"
+    echo "# List all deployments"
+    kubectl get deployments
+    echo "\n# Create a deployment with a specific image"
+    kubectl create deployment <deployment-name> --image=<image-name>
+    echo "\n# Scale a deployment"
+    kubectl scale deployment <deployment-name> --replicas=<num-replicas>
+    echo "\n# Update a deployment with a new image"
+    kubectl set image deployment/<deployment-name> <container-name>=<new-image-name>
+    echo "\n# Rollback a deployment"
+    kubectl rollout undo deployment/<deployment-name>
+    echo "\n# Check rollout status of a deployment"
+    kubectl rollout status deployment/<deployment-name>
+    echo "\n# Pausa il rollout di un deployment"
+    kubectl rollout pause deployment/<deployment-name>
+    echo "\n# Riprendi il rollout di un deployment"
+    kubectl rollout resume deployment/<deployment-name>
+    echo "\n# Mostra la cronologia del rollout di un deployment"
+    kubectl rollout history deployment/<deployment-name>
 }
 
-# =============================================
-# Jobs and CronJobs
-# =============================================
-function jobs_troubleshooting() {
-  echo "=== Debugging Jobs and CronJobs ==="
-  
-  # Comandi per troubleshooting di Jobs e CronJobs
-  echo "1. List all jobs:"
-  kubectl get jobs
-
-  echo "2. Describe a specific job:"
-  echo "kubectl describe job <job-name>"
-
-  echo "3. List all cronjobs:"
-  kubectl get cronjob
-
-  # Aggiungi controllo delle istanze di job
-  echo "4. Get job logs:"
-  kubectl logs -l job-name=<job-name> --all-containers=true
+service_operations() {
+    echo "# Work with Services"
+    echo "# List all services"
+    kubectl get services
+    echo "\n# Create a LoadBalancer service"
+    kubectl expose deployment <deployment-name> --type=LoadBalancer --port=80 --target-port=8080
+    echo "\n# Create a ClusterIP service"
+    kubectl expose deployment <deployment-name> --type=ClusterIP --port=80 --target-port=8080
+    echo "\n# Describe a specific service"
+    kubectl describe service <service-name>
 }
 
-# =============================================
-# Ingress and Services
-# =============================================
-function ingress_troubleshooting() {
-  echo "=== Debugging Ingress and Services ==="
-  
-  # Comandi per troubleshooting di Ingress e servizi
-  echo "1. List ingress resources:"
-  kubectl get ingress --all-namespaces
-
-  echo "2. Describe a specific ingress:"
-  echo "kubectl describe ingress <ingress-name>"
-
-  echo "3. Check logs of ingress controller:"
-  echo "kubectl logs -n ingress-nginx <controller-pod-name>"
-
-  # Aggiungi troubleshooting avanzato
-  echo "4. Check service endpoints:"
-  kubectl get endpoints <service-name>
+namespace_operations() {
+    echo "# Namespace Operations"
+    echo "# List all namespaces"
+    kubectl get namespaces
+    echo "\n# Switch the current namespace"
+    kubectl config set-context --current --namespace=<namespace-name>
+    echo "\n# Create a new namespace"
+    kubectl create namespace <namespace-name>
+    echo "\n# Visualizza risorse in tutti i namespace"
+    kubectl get pods --all-namespaces
+    echo "\n# Visualizza risorse in un namespace specifico"
+    kubectl get pods -n <namespace-name>
+    echo "\n# Elimina un namespace"
+    kubectl delete namespace <namespace-name>
 }
 
-# =============================================
-# Security and Policies
-# =============================================
-function security_troubleshooting() {
-  echo "=== Security and Policies ==="
-  
-  # Comandi per troubleshooting su sicurezza
-  echo "1. List all Pod Security Policies (PSPs):"
-  kubectl get psp --all-namespaces
-
-  echo "2. Check for privileged containers:"
-  kubectl get pods -o json | jq '.items[] | select(.spec.containers[].securityContext.privileged==true)'
-
-  echo "3. Verify containers without securityContext:"
-  kubectl get pods -o json | jq '.items[] | select(.spec.containers[].securityContext==null)'
+configmaps_and_secrets() {
+    echo "# ConfigMaps and Secrets"
+    echo "# List all ConfigMaps"
+    kubectl get configmaps
+    echo "\n# Create a ConfigMap from a file"
+    kubectl create configmap <configmap-name> --from-file=<file-path>
+    echo "\n# Describe a ConfigMap"
+    kubectl describe configmap <configmap-name>
+    echo "\n# Estrai dati da un ConfigMap"
+    kubectl get configmap <configmap-name> -o jsonpath='{.data.<key>}'
+    echo "\n# List all Secrets"
+    kubectl get secrets
+    echo "\n# Create a Secret from a file"
+    kubectl create secret generic <secret-name> --from-file=<file-path>
+    echo "\n# Describe a Secret"
+    kubectl describe secret <secret-name>
+    echo "\n# Estrai dati da un Secret"
+    kubectl get secret <secret-name> -o jsonpath='{.data.<key>}' | base64 --decode
 }
 
-# =============================================
-# Advanced Tips and Tools
-# =============================================
-function advanced_tips() {
-  echo "=== Advanced Tips and Tools ==="
-  
-  # Comandi avanzati e suggerimenti
-  echo "1. Validate YAML configuration before applying:"
-  echo "kubectl apply --dry-run=client -f <file.yaml>"
-
-  echo "2. View detailed YAML of any resource:"
-  echo "kubectl get <resource> <name> -o yaml"
-
-  echo "3. Simulate application of a resource:"
-  echo "kubectl apply --dry-run=server -f <file.yaml>"
-
-  echo "4. Start a debug container on a node:"
-  echo "kubectl debug node/<node-name> -it --image=busybox"
+pv_and_pvc_operations() {
+    echo "# Persistent Volumes and Claims"
+    echo "# List all Persistent Volumes"
+    kubectl get pv
+    echo "\n# List all Persistent Volume Claims"
+    kubectl get pvc
+    echo "\n# Describe a Persistent Volume Claim"
+    kubectl describe pvc <pvc-name>
 }
 
-# =============================================
-# YAML Formatting and Validation
-# =============================================
-function yaml_troubleshooting() {
-  echo "=== YAML Troubleshooting and Tips ==="
-  
-  # Comandi per validazione YAML
-  echo "1. Validate YAML syntax (locally):"
-  echo "yaml-lint <file.yaml>"
-
-  echo "2. Check indentation errors in YAML:"
-  echo "kubectl apply -f <file.yaml> --dry-run=client"
-
-  echo "3. Show which resource is defined in the YAML:"
-  echo "kubectl apply -f <file.yaml> --dry-run=server"
+replicasets_and_daemonsets() {
+    echo "# ReplicaSets and DaemonSets"
+    echo "# List all ReplicaSets"
+    kubectl get replicasets
+    echo "\n# Describe a specific ReplicaSet"
+    kubectl describe replicaset <replicaset-name>
+    echo "\n# List all DaemonSets"
+    kubectl get daemonsets
 }
 
-# =============================================
-# Main Logic
-# =============================================
-case $1 in
-  pods)
-    pods_troubleshooting
-    ;;
-  nodes)
-    nodes_troubleshooting
-    ;;
-  network)
-    network_troubleshooting
-    ;;
-  volumes)
-    storage_troubleshooting
-    ;;
-  jobs)
-    jobs_troubleshooting
-    ;;
-  ingress)
-    ingress_troubleshooting
-    ;;
-  security)
-    security_troubleshooting
-    ;;
-  advanced)
-    advanced_tips
-    ;;
-  yaml)
-    yaml_troubleshooting
-    ;;
-  *)
-    show_help
-    ;;
-esac
+jobs_and_cronjobs() {
+    echo "# Jobs and CronJobs"
+    echo "# List all Jobs"
+    kubectl get jobs
+    echo "\n# List all CronJobs"
+    kubectl get cronjobs
+    echo "\n# Create a CronJob"
+    kubectl create cronjob <cronjob-name> --schedule="*/5 * * * *" --image=<image-name>
+    echo "\n# Genera YAML per creare un Job da un pod esistente"
+    kubectl create job <job-name> --from=pod/<pod-name> --dry-run=client -o yaml
+    echo "\n# Genera YAML per un CronJob da un Job esistente"
+    kubectl create cronjob <cronjob-name> --schedule="0 0 * * *" --image=<image-name> --dry-run=client -o yaml
+}
+
+advanced_debugging() {
+    echo "# Advanced Debugging"
+    echo "# View recent events in the cluster"
+    kubectl get events --sort-by='.lastTimestamp'
+    echo "\n# Find pods in CrashLoopBackOff state"
+    kubectl get pods --field-selector=status.phase!=Running
+    echo "\n# Describe a failing pod"
+    kubectl describe pod <pod-name>
+    echo "\n# View resource usage for nodes"
+    kubectl top nodes
+    echo "\n# View resource usage for pods"
+    kubectl top pods
+    echo "\n# Debug di un pod con kubectl debug"
+    kubectl debug pod/<pod-name> -it --image=busybox --target=<container-name>
+    echo "\n# Crea una shell temporanea in un container di debug"
+    kubectl run -i --tty debug --image=busybox --restart=Never -- sh
+}
+
+yaml_generation() {
+    echo "# YAML Generation and Editing"
+    echo "# Generate YAML for a Deployment"
+    kubectl get deployment <deployment-name> -o yaml
+    echo "\n# Generate YAML for a scaled Deployment"
+    kubectl scale deployment <deployment-name> --replicas=5 --dry-run=client -o yaml
+    echo "\n# Create YAML for a Pod using dry-run"
+    kubectl run <pod-name> --image=<image-name> --dry-run=client -o yaml > <file-name>.yaml
+}
+
+advanced_usage() {
+    echo "# Advanced Usage"
+    echo "# Patch a resource"
+    kubectl patch <resource> <name> -p '{"spec": {"replicas": 3}}'
+    echo "\n# Simulate changes without applying them"
+    kubectl apply -f <file.yaml> --dry-run=client
+    echo "\n# Filter resources using grep"
+    kubectl get pods --no-headers | grep <pattern>
+    echo "\n# Estrarre nomi di tutti i nodi"
+    kubectl get nodes -o jsonpath='{.items[*].metadata.name}'
+    echo "\n# Estrai indirizzi
