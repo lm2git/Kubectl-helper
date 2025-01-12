@@ -1,4 +1,5 @@
-# Kubernetes Kubectl-helper a Command Helper Script
+# Kubectl-helper 
+## A simple kubectl kubernetes command Helper Script
 
 This repository contains a helper script for Kubernetes command-line operations. It is designed to provide a quick reference for managing resources in a Kubernetes cluster.
 
@@ -84,3 +85,4 @@ kubectl logs <pod-name>
 # Follow logs of a pod in real-time
 kubectl logs -f <pod-name>
 ```
+
